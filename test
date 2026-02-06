@@ -1,0 +1,63 @@
+import React, { useState } from 'react';
+
+// Ein funktionaler GUI-Builder als React-Komponente
+const GuiBuilder = () => {
+    const [elements, setElements] = useState([]);
+    const [selectedType, setSelectedType] = useState('SLOT'); // SLOT, BUTTON, PROGRESS
+
+    const addElement = (e) => {
+        const rect = e.target.getBoundingClientRect();
+        const x = Math.floor((e.clientX - rect.left) / 18) * 18; // 18px Grid-Snapping
+        const y = Math.floor((e.clientY - rect.top) / 18) * 18;
+
+        const newElement = {
+            id: Date.now(),
+            type: selectedType,
+            x: x,
+            y: y,
+            w: 18,
+            h: 18
+        };
+        setElements([...elements, newElement]);
+    };
+
+    return (
+        <div style={{ display: 'flex', gap: '20px', background: '#1a1a1a', padding: '20px', color: '#fff' }}>
+            {/* Toolbar */}
+            <div style={{ width: '200px', borderRight: '1px solid #444' }}>
+                <h3>Controls</h3>
+                <button onClick={() => setSelectedType('SLOT')}>Slot Tool</button>
+                <button onClick={() => setSelectedType('BUTTON')}>Button Tool</button>
+                <hr />
+                <button onClick={() => console.log(JSON.stringify(elements))}>Export JSON</button>
+            </div>
+
+            {/* Editor Canvas */}
+            <div 
+                onClick={addElement}
+                style={{
+                    width: '324px', // 18 * 18 slots
+                    height: '162px',
+                    background: '#8b8b8b',
+                    border: '2px solid #373737',
+                    position: 'relative',
+                    cursor: 'crosshair'
+                }}
+            >
+                {elements.map(el => (
+                    <div key={el.id} style={{
+                        position: 'absolute',
+                        left: el.x,
+                        top: el.y,
+                        width: el.w - 2,
+                        height: el.h - 2,
+                        background: el.type === 'SLOT' ? '#555' : '#e67e22',
+                        border: '1px solid #000'
+                    }} />
+                ))}
+            </div>
+        </div>
+    );
+};
+
+export default GuiBuilder;
